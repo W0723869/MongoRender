@@ -37,8 +37,8 @@ app.get('/api/mongo/:item', function(req, res) {
 
   async function run() {
     try {
-      const database = client.db('ckmdb');
-      const parts = database.collection('cmps415');
+      const database = client.db('Cmps-415');
+      const parts = database.collection('Mystuff');
 
       const query = { partID: searchKey }; // Make sure partID is stored as a string
 
