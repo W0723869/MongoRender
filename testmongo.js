@@ -1,54 +1,66 @@
 const { MongoClient } = require("mongodb");
 
-// The uri string must be the connection string for the database (obtained on Atlas).
-const uri = "mongodb+srv://<user>:<password>@ckmdb.5oxvqja.mongodb.net/?retryWrites=true&w=majority";
+// MongoDB Atlas connection string
+const uri = "mongodb+srv://kade0439:Rohwedder101@cmps-415.kfrm8o9.mongodb.net/?retryWrites=true&w=majority&appName=Cmps-415";
 
-// --- This is the standard stuff to get it to work on the browser
+// --- Express setup ---
 const express = require('express');
 const app = express();
 const port = 3000;
-app.listen(port);
-console.log('Server started at http://localhost:' + port);
+
+app.listen(port, () => {
+  console.log('Server started at http://localhost:' + port);
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// routes will go here
-
-// Default route:
+// --- Default route ---
 app.get('/', function(req, res) {
-  res.send('Starting... ');
+  console.log("Default route '/' hit");
+  res.send('Starting');
 });
 
+// --- Greeting route ---
 app.get('/say/:name', function(req, res) {
+  console.log("Greeting route hit with name:", req.params.name);
   res.send('Hello ' + req.params.name + '!');
 });
 
-
-// Route to access database:
+// --- MongoDB Query by partID ---
 app.get('/api/mongo/:item', function(req, res) {
-const client = new MongoClient(uri);
-const searchKey = "{ partID: '" + req.params.item + "' }";
-console.log("Looking for: " + searchKey);
+  console.log("/api/mongo/:item route hit");
 
-async function run() {
-  try {
-    const database = client.db('ckmdb');
-    const parts = database.collection('cmps415');
+  const client = new MongoClient(uri);
+  const searchKey = req.params.item;
+  console.log("Looking for partID:", searchKey);
 
-    // Hardwired Query for a part that has partID '12345'
-    // const query = { partID: '12345' };
-    // But we will use the parameter provided with the route
-    const query = { partID: req.params.item };
+  async function run() {
+    try {
+      const database = client.db('ckmdb');
+      const parts = database.collection('cmps415');
 
-    const part = await parts.findOne(query);
-    console.log(part);
-    res.send('Found this: ' + JSON.stringify(part));  //Use stringify to print a json
+      const query = { partID: searchKey }; // Make sure partID is stored as a string
 
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
+      const part = await parts.findOne(query);
+      console.log("Query result:", part);
+
+      if (!part) {
+        res.status(404).send("❌ No part found with partID: " + searchKey);
+        return;
+      }
+
+      res.send('Found this: ' + JSON.stringify(part));
+    } catch (error) {
+      console.error("Error occurred:", error);
+      res.status(500).send("Internal Server Error");
+    } finally {
+      await client.close();
+      console.log("MongoDB connection closed");
+    }
   }
-}
-run().catch(console.dir);
+
+  run().catch(err => {
+    console.error("Run function failed:", err);
+  });
 });
