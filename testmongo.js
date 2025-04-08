@@ -1,7 +1,7 @@
 const { MongoClient } = require("mongodb");
 
 // MongoDB Atlas connection string
-const uri = "mongodb+srv://kade0439:Rohwedder101@cmps-415.kfrm8o9.mongodb.net/?retryWrites=true&w=majority&appName=Cmps-415";
+const uri = "mongodb+srv://kade0439:Password@cmps-415.kfrm8o9.mongodb.net/?retryWrites=true&w=majority&appName=Cmps-415";
 
 // --- Express setup ---
 const express = require('express');
@@ -31,7 +31,7 @@ console.log("Looking for: " + searchKey);
 
 async function run() {
   try {
-    const database = client.db('Cmps-415');
+    const database = client.db('Cmps415-DB');
     const parts = database.collection('Mystuff');
 
     const query = { partID: req.params.item };
