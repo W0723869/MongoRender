@@ -1,7 +1,7 @@
 const { MongoClient } = require("mongodb");
 
 // MongoDB Atlas connection string
-const uri = "mongodb+srv://kade0439:Rohwedder101@cmps-415.kfrm8o9.mongodb.net/?retryWrites=true&w=majority&appName=Cmps-415";
+const uri = "mongodb+srv://kade0439:Rohwedder101@@cmps-415.kfrm8o9.mongodb.net/?retryWrites=true&w=majority&appName=Cmps-415";
 
 // --- Express setup ---
 const express = require('express');
